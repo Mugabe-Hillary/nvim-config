@@ -130,3 +130,8 @@ vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show Line 
 vim.keymap.set("n", "<leader>tl", function()
   require("lsp_lines").toggle()
 end, { desc = "Toggle LSP Lines" })
+
+-- Alpha dashboard keymaps (add these to your existing keymaps.lua)
+
+-- Open dashboard
+vim.keymap.set("n", "<leader>da", ":Alpha<CR>", { desc = "Open Dashboard" })
