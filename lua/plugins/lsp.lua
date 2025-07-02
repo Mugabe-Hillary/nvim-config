@@ -11,19 +11,82 @@ return {
       require("mason").setup()
       require("mason-lspconfig").setup({
         ensure_installed = {
-          "ts_ls",        -- JavaScript/TypeScript
-          "pyright",         -- Python
-          "tailwindcss",     -- Tailwind CSS
-          "html",            -- HTML
-          "cssls",           -- CSS
-          "jsonls",          -- JSON
-          "eslint",          -- ESLint
+          "ts_ls",       -- JavaScript/TypeScript
+          "pyright",     -- Python
+          "tailwindcss", -- Tailwind CSS
+          "html",        -- HTML
+          "cssls",       -- CSS
+          "jsonls",      -- JSON
+          "eslint",      -- ESLint
         },
       })
 
       local lspconfig = require("lspconfig")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+      -- Enhanced diagnostic configuration
+      vim.diagnostic.config({
+        -- Update in insert mode
+        update_in_insert = true,
+
+        -- Show diagnostics in a floating window
+        float = {
+          focusable = false,
+          style = "minimal",
+          border = "rounded",
+          source = "always",
+          header = "",
+          prefix = "",
+        },
+
+        -- Virtual text configuration (will be disabled if using lsp_lines)
+        virtual_text = {
+          spacing = 4,
+          source = "if_many",
+          prefix = "●",
+          -- Format function to customize virtual text
+          format = function(diagnostic)
+            local message = diagnostic.message
+            if #message > 50 then
+              return message:sub(1, 47) .. "..."
+            end
+            return message
+          end,
+        },
+
+        -- Signs in the gutter
+        signs = true,
+
+        -- Underline diagnostics
+        underline = true,
+
+        -- Sort diagnostics by severity
+        severity_sort = true,
+      })
+
+      -- Customize diagnostic signs
+      local signs = { Error = " ", Warn = " ", Hint = "󰌶 ", Info = " " }
+      for type, icon in pairs(signs) do
+        local hl = "DiagnosticSign" .. type
+        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+      end
+
+      -- Auto-show diagnostics on cursor hold
+      vim.api.nvim_create_autocmd("CursorHold", {
+        callback = function()
+          local opts = {
+            focusable = false,
+            close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+            border = 'rounded',
+            source = 'always',
+            prefix = ' ',
+            scope = 'cursor',
+          }
+          vim.diagnostic.open_float(nil, opts)
+        end
+      })
+
+      -- LSP server configurations
       lspconfig["ts_ls"].setup({ capabilities = capabilities })
       lspconfig.pyright.setup({
         capabilities = capabilities,
@@ -46,21 +109,20 @@ return {
           Lua = {
             runtime = {
               version = "LuaJIT",
+            },
+            diagnostics = {
+              globals = { "vim" }, -- ✅ Prevents "undefined global 'vim'" warning
+            },
+            workspace = {
+              library = vim.api.nvim_get_runtime_file("", true),
+              checkThirdParty = false,
+            },
+            telemetry = {
+              enable = false,
+            },
+          },
         },
-        diagnostics = {
-          globals = { "vim" },  -- ✅ Prevents "undefined global 'vim'" warning
-        },
-        workspace = {
-          library = vim.api.nvim_get_runtime_file("", true),
-          checkThirdParty = false,
-        },
-        telemetry = {
-          enable = false,
-        },
-      },
-    },
-  })
-
+      })
     end,
   },
 
@@ -125,7 +187,7 @@ return {
 
   -- Formatter: Prettierd via null-ls
   {
-    "nvimtools/none-ls.nvim",  -- maintained fork of null-ls.nvim
+    "nvimtools/none-ls.nvim", -- maintained fork of null-ls.nvim
     dependencies = {
       "williamboman/mason.nvim",
       "jay-babu/mason-null-ls.nvim",
@@ -159,7 +221,4 @@ return {
       })
     end,
   },
-
-
 }
-
