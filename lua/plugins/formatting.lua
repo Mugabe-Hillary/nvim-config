@@ -40,7 +40,7 @@ return {
     config = function()
       require("lualine").setup({
         options = {
-          theme = "rose-pine",
+          theme = "onedark",
         },
       })
     end,

@@ -124,7 +124,7 @@ vim.keymap.set("n", "]e", function()
 end, { desc = "Next Error" })
 
 -- Show line diagnostics
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show Line Diagnostics" })
+vim.keymap.set("n", "<leader>de", vim.diagnostic.open_float, { desc = "Show Line Diagnostics" })
 
 -- Toggle lsp_lines (if using lsp_lines plugin)
 vim.keymap.set("n", "<leader>tl", function()

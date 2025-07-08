@@ -3,7 +3,7 @@ require("lazy").setup({
   { import = "plugins" },
 }, {
   install = {
-    colorscheme = { "rose-pine" },
+    colorscheme = { "onedark" },
   },
   checker = {
     enabled = true,
